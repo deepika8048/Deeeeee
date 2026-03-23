@@ -1,0 +1,29 @@
+{
+  "entities": {
+    "Metal": {
+      "title": "Metal Price Data",
+      "description": "Real-time price information for precious metals",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "symbol": { "type": "string" },
+        "price": { "type": "number" },
+        "prevOpen": { "type": "number" },
+        "prevClose": { "type": "number" },
+        "change": { "type": "number" },
+        "changePercent": { "type": "number" },
+        "currency": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "date": { "type": "string" }
+      },
+      "required": ["id", "name", "symbol", "price", "prevOpen", "prevClose"]
+    }
+  },
+  "firestore": {
+    "metals/{metalId}": {
+      "schema": "Metal",
+      "description": "Collection of metal price documents"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: metals
+    // Document ID: metalId (e.g., gold, silver)
+    // Fields:
+    //   - id: string (required)
+    //   - name: string (required)
+    //   - symbol: string (required)
+    //   - price: number (required)
+    //   - prevOpen: number (required)
+    //   - prevClose: number (required)
+    //   - change: number
+    //   - changePercent: number
+    //   - currency: string
+    //   - timestamp: string
+    //   - date: string
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "deepikap020@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidMetal(data) {
+      return data.keys().hasAll(['id', 'name', 'symbol', 'price', 'prevOpen', 'prevClose']) &&
+             data.id is string &&
+             data.name is string &&
+             data.symbol is string &&
+             data.price is number &&
+             data.prevOpen is number &&
+             data.prevClose is number;
+    }
+
+    // Rules for metals collection
+    match /metals/{metalId} {
+      // Allow public read for price data
+      allow read: if true;
+      
+      // Only admins can update prices
+      allow write: if isAdmin() && isValidMetal(request.resource.data);
+    }
+
+    // Rules for users collection (for RBAC)
+    match /users/{userId} {
+      allow read: if request.auth.uid == userId || isAdmin();
+      allow write: if isAdmin();
+    }
+  }
+}

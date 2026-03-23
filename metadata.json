@@ -1,0 +1,5 @@
+{
+  "name": "MetalPricesApp",
+  "description": "A live metal price tracking application showing real-time data for Gold, Silver, Platinum, and Palladium.",
+  "requestFramePermissions": []
+}
